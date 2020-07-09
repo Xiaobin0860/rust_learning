@@ -141,3 +141,20 @@ fn test_enums() {
     assert_eq!(2, Number::Two as i32);
     assert_eq!(0xff0000, Color::Red as i32);
 }
+
+///
+/// constants
+///
+/// * `const`: An unchangeable value(the common case).test
+/// * `static`: A possibly `mut`able variable with `'static` lifetime
+/// Accessing or modifying a mutable static variable is `unsafe`.
+///
+
+static LANGUAGE: &str = "Rust";
+const THRESHOLD: i32 = 10;
+
+#[test]
+fn test_constants() {
+    println!("This is {}", LANGUAGE);
+    println!("The threshold is {}", THRESHOLD);
+}
