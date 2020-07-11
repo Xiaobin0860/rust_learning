@@ -51,6 +51,12 @@ fn test_for() {
     }
 }
 
+///
+/// # match
+///
+/// Rust provides pattern matching via the `match` keyword, which can be used like a C `switch`.assert_eq!
+///
+
 #[test]
 fn test_match() {
     let n = 13;
@@ -66,4 +72,102 @@ fn test_match() {
         true => 1,
     };
     assert_eq!(1, b);
+}
+
+///
+/// ## Destructuring
+///
+/// A `match` block can destructure items in a variety of ways.
+///
+
+#[test]
+fn test_match_destructure() {
+    let pair = (0, -2);
+    match pair {
+        (0, y) => println!("x=0, y={}", y),
+        (x, 0) => println!("x={}, y=0", x),
+        _ => println!("{:?}", pair),
+    }
+
+    #[allow(dead_code)]
+    enum Color {
+        Red,
+        Green,
+        Blue,
+        RGB(u32, u32, u32),
+    }
+
+    let color = Color::RGB(0, 255, 0);
+    match color {
+        Color::Red => println!("red"),
+        Color::Green => println!("green"),
+        Color::Blue => println!("blue"),
+        Color::RGB(r, g, b) => println!("rgb({}, {}, {})", r, g, b),
+    }
+
+    struct Foo {
+        x: (u32, u32),
+        y: i32,
+    }
+    let foo = Foo { x: (1, 2), y: 3 };
+    match foo {
+        Foo { x: (2, b), y } => println!("x.0=1, x.1={}, y={}", b, y),
+        //the order is not important, and you can ignore some variables
+        Foo { y: xxx, .. } => println!("y={}", xxx),
+    }
+}
+
+///
+/// ## Guards
+///
+/// A `match` guard can be added to filter the arm.
+///
+#[test]
+fn test_match_guard() {
+    let pair = (2, -2);
+    match pair {
+        (x, y) if x == y => println!("These are twins"),
+        (x, y) if x + y == 0 => println!("x+y==0: x={}, y={}", x, y),
+        (x, _) if x % 2 == 1 => println!("x is odd"),
+        _ => println!("..."),
+    }
+}
+
+///
+/// ## Binding
+///
+/// `match` provides `@` sigil for binding values to names
+///
+fn some_number() -> Option<i32> {
+    Some(42)
+}
+#[test]
+fn test_match_binding() {
+    match some_number() {
+        Some(n @ 42) => println!("42 ok. n={}", n),
+        Some(n) => println!("n={}", n),
+        _ => (),
+    }
+}
+
+///
+/// ## if let, while let
+///
+#[test]
+fn test_match_let() {
+    let optinal = Some(7);
+    if let Some(i) = optinal {
+        println!("some {}", i);
+    }
+
+    let mut opt = Some(0);
+    while let Some(i) = opt {
+        if i > 9 {
+            println!("Greater then 9, quit!");
+            opt = None;
+        } else {
+            println!("i={}, Try again!", i);
+            opt = Some(i + 1);
+        }
+    }
 }
