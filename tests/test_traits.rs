@@ -4,23 +4,35 @@
 /// A `trait` is a collection of methods defined for an unknown type: `Self`.
 /// They can access other methods declared in the same trait.
 ///
+/// ## Returning Traits with `dyn`
+///
+/// The Rust compiler needs to know how mutch space every function's return type requires.
+/// This means all your functions have to return a concrete type. So, you can't write a function
+/// that returns `Animal`. However you can use `Box<dyn Animal>`
+/// 
 struct Sheep {
     naked: bool,
     name: &'static str,
 }
+struct Cow {
+    name: &'static str,
+}
 
-trait Animal {
-    //static method signature; `Self` refers to the implementor type.
-    fn new(name: &'static str) -> Self;
-
+trait Noise {
+    fn noise(&self) -> &'static str;
+}
+trait Animal: Noise {
     //instance method signatures; these will return a string.
     fn name(&self) -> &'static str;
-    fn noise(&self) -> &'static str;
 
     //traits can provide default method definitions
     fn talk(&self) {
         println!("{} says {}", self.name(), self.noise());
     }
+}
+trait NewAnimal: Animal {
+    //static method signature; `Self` refers to the implementor type.
+    fn new(name: &'static str) -> Self;
 }
 
 impl Sheep {
@@ -39,22 +51,20 @@ impl Sheep {
     }
 }
 
-//implement the `Animal` trait for `Sheep`
-impl Animal for Sheep {
-    fn new(name: &'static str) -> Sheep {
-        Sheep { naked: false, name }
-    }
-
-    fn name(&self) -> &'static str {
-        self.name
-    }
-
+impl Noise for Sheep {
     fn noise(&self) -> &'static str {
         if self.is_naked() {
             "baaaaah?"
         } else {
             "baaaaah!"
         }
+    }
+}
+
+//implement the `Animal` trait for `Sheep`
+impl Animal for Sheep {
+    fn name(&self) -> &'static str {
+        self.name
     }
 
     //default trait methods can be overridden
@@ -63,12 +73,44 @@ impl Animal for Sheep {
     }
 }
 
+impl NewAnimal for Sheep {
+    fn new(name: &'static str) -> Sheep {
+        Sheep { naked: false, name }
+    }
+}
+
+impl Noise for Cow {
+    fn noise(&self) -> &'static str {
+        "moooooo!"
+    }
+}
+impl Animal for Cow {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+}
+
+fn rand_animal() -> Box<dyn Animal> {
+    if rand::random() {
+        Box::new(Sheep {
+            name: "sheep",
+            naked: false,
+        })
+    } else {
+        Box::new(Cow { name: "cow" })
+    }
+}
+
 #[test]
 fn test_traits() {
-    let mut dolly: Sheep = Animal::new("Dolly");
+    let mut dolly: Sheep = NewAnimal::new("Dolly");
     dolly.talk();
     dolly.shear();
     dolly.talk();
+    for _i in 1..=10 {
+        let animal = rand_animal();
+        animal.talk();
+    }
 }
 
 ///
@@ -111,4 +153,41 @@ fn test_derive() {
         "bigger"
     };
     println!("One foot is {} than one meter.", cmp);
+}
+
+///
+/// ## Operator Overloading
+///
+use std::ops;
+struct Foo;
+struct Bar;
+
+#[derive(Debug)]
+struct FooBar;
+
+#[derive(Debug)]
+struct BarFoo;
+
+impl<T> ops::Add<T> for Foo {
+    type Output = FooBar;
+    fn add(self, _rhs: T) -> Self::Output {
+        println!("> Foo.add(Bar) was called");
+        FooBar
+    }
+}
+impl ops::Add<Foo> for Bar {
+    type Output = BarFoo;
+
+    fn add(self, _rhs: Foo) -> BarFoo {
+        println!("> Bar.add(Foo) was called");
+
+        BarFoo
+    }
+}
+#[test]
+fn test_ops() {
+    println!("Foo + Bar = {:?}", Foo + Bar);
+    println!("Foo + 1 = {:?}", Foo + 1);
+    println!("Foo + 1 = {:?}", Foo + "1");
+    println!("Bar + Foo = {:?}", Bar + Foo);
 }
