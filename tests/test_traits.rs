@@ -9,7 +9,7 @@
 /// The Rust compiler needs to know how mutch space every function's return type requires.
 /// This means all your functions have to return a concrete type. So, you can't write a function
 /// that returns `Animal`. However you can use `Box<dyn Animal>`
-/// 
+///
 struct Sheep {
     naked: bool,
     name: &'static str,

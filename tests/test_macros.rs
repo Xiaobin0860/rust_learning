@@ -21,6 +21,19 @@ fn test_macros() {
 /// ### Disignators
 ///
 /// The arguments of a macro are prefixed by a `$` and type annotated with a designator:
+/// These are some of  the available designator:assert_eq!
+///
+/// * `block`
+/// * `expr` is used for expressings
+/// * `ident` is used for variable/function names
+/// * `item`
+/// * `literal` is used for literal constants
+/// * `pat`(pattern)
+/// * `path`
+/// * `stmt`(statement)
+/// * `tt`(token tree)
+/// * `ty`(type)
+/// * `vis`(visibility qualifier)
 ///
 macro_rules! create_function {
     // This macro takes an argument of designator `ident` and
@@ -52,4 +65,39 @@ fn test_designators() {
         let x = 1u32;
         x * x + 2 * x - 1
     })
+}
+
+///
+/// ### Overload
+///
+/// Macro can be overloaded to accept different combinations of arguments.
+/// In that regard, `macro_rules!` can work similarly to a match block:
+///
+macro_rules! test {
+    // Arguments don't need to be separated by a comma.
+    // Any template can be used!
+    ($left:expr; and $right:expr) => {
+        println!(
+            "{:?} and {:?} is {:?}",
+            stringify!($left),
+            stringify!($right),
+            $left && $right
+        )
+    };
+    // Arguments don't need to be separated by a comma.
+    // Any template can be used!
+    ($left:expr; or $right:expr) => {
+        println!(
+            "{:?} or {:?} is {:?}",
+            stringify!($left),
+            stringify!($right),
+            $left || $right
+        )
+    };
+}
+
+#[test]
+fn test_overload() {
+    test!(1+1==2; and 2*2==4);
+    test!(true; or false);
 }
