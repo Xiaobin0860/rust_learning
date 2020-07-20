@@ -189,6 +189,10 @@ mod test {
 ///
 /// A DSL is a mini "language" embedded in a Rust macro
 ///
+/// ## Variadic Interfaces
+///
+/// A variadic interface takes an arbitrary number of arguments.
+///
 macro_rules! calculate {
     // The pattern for a single `eval`
     (eval $e: expr) => {{
