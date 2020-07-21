@@ -126,13 +126,27 @@ fn test_unpacking() {
 /// `Option` has a built in method called `map()`, a combinator for the simple mapping of `Some -> Some`
 /// and `None -> None`. Multiple `map()` replaces all functions previous to it while staying compact.
 ///
-#[derive(Debug)]
+/// ### Combinators: `and_then`
+///
+/// `and_then()` calls its function input with the wrapped value and returns the result. If the `Option` is
+/// `None`, then it returns `None` instead.
+///
+
+#[derive(Debug, PartialEq)]
 enum Food {
     Apple,
     Carrot,
     Potato,
+    CordonBleu,
+    Steak,
+    Sushi,
 }
-
+#[derive(Debug)]
+enum Day {
+    Monday,
+    Tuesday,
+    Wendnesday,
+}
 #[derive(Debug)]
 struct Peeled(Food);
 #[derive(Debug)]
@@ -168,8 +182,43 @@ fn eat(food: Option<Cooked>) {
     }
 }
 
+fn have_ingredients(food: Food) -> Option<Food> {
+    match food {
+        Food::Sushi => None,
+        _ => Some(food),
+    }
+}
+
+fn have_recipe(food: Food) -> Option<Food> {
+    match food {
+        Food::CordonBleu => None,
+        _ => Some(food),
+    }
+}
+
+fn cookable_v1(food: Food) -> Option<Food> {
+    match have_recipe(food) {
+        None => None,
+        Some(food) => match have_ingredients(food) {
+            None => None,
+            Some(food) => Some(food),
+        },
+    }
+}
+
+fn cookable_v2(food: Food) -> Option<Food> {
+    have_recipe(food).and_then(have_ingredients)
+}
+
+fn eat2(food: Food, day: Day) {
+    match cookable_v2(food) {
+        Some(food) => println!("Yay! On {:?} we get to eat {:?}.", day, food),
+        None => println!("Oh no. We don't get to eat on {:?}?", day),
+    }
+}
+
 #[test]
-fn test_combinators_map() {
+fn test_combinators() {
     let apple = Some(Food::Apple);
     let carrot = Some(Food::Carrot);
     let potato = None;
@@ -185,4 +234,38 @@ fn test_combinators_map() {
     let potato = Some(Food::Potato);
     let cooked_potato = process(potato);
     eat(cooked_potato);
+
+    let (cordon_bleu, steak, sushi) = (Food::CordonBleu, Food::Steak, Food::Sushi);
+    eat2(cordon_bleu, Day::Monday);
+    eat2(steak, Day::Tuesday);
+    eat2(sushi, Day::Wendnesday);
+
+    assert_eq!(cookable_v1(Food::Steak), Some(Food::Steak));
+    assert_eq!(cookable_v1(Food::CordonBleu), None);
+}
+
+///
+/// ## `Result`
+///
+/// `Result` si a richer version of the `Option` type that describes possible error instead of possible absence.
+///
+/// That is, `Result<T, E>` could have one of two outcomes:
+///
+/// * `Ok(T)`: An element `T` was found
+/// * `Err(E)`: An error was found with element `E`
+///
+/// ### `map` for `Result`
+///
+/// ### aliases for `Result`
+///
+use std::num::ParseIntError;
+#[test]
+fn test_result() -> Result<(), ParseIntError> {
+    let number_str = "10";
+    let number = match number_str.parse::<i32>() {
+        Ok(number) => number,
+        Err(e) => return Err(e),
+    };
+    println!("{}", number);
+    Ok(())
 }
