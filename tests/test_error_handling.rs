@@ -258,7 +258,32 @@ fn test_combinators() {
 ///
 /// ### aliases for `Result`
 ///
+/// ### Early returns
+///
+/// ### Introducing `?`
+///
+/// Upon finding an `Err`, there are two valid actions to take:
+///
+///     1. `panic!` which we already decided to try to avoid if possible
+///     2. `return` because an `Err` means it cannot be handled
+///
+/// `?` is almost exactly equivalent to an `unwrap` with `return`s instead of `panic`king on `Err`s
+///
 use std::num::ParseIntError;
+
+fn multiply(n1_str: &str, n2_str: &str) -> Result<i32, ParseIntError> {
+    let n1: i32 = n1_str.parse()?;
+    let n2 = n2_str.parse::<i32>()?;
+    Ok(n1 * n2)
+}
+
+fn print(result: Result<i32, ParseIntError>) {
+    match result {
+        Ok(n) => println!("n is {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
+}
+
 #[test]
 fn test_result() -> Result<(), ParseIntError> {
     let number_str = "10";
@@ -267,5 +292,80 @@ fn test_result() -> Result<(), ParseIntError> {
         Err(e) => return Err(e),
     };
     println!("{}", number);
+
+    print(multiply("10", "2"));
+    print(multiply("t", "2"));
+
     Ok(())
+}
+
+///
+/// ## Multiple error types
+///
+/// Sometimes an `Option` needs to interact with a `Result`, or a `Result<T, Error1> need to interact
+/// with an `Result<T, Error2>. In those cases, we want to manage our different error types in a way
+/// that makes them composable and easy to interact with.
+///
+/// ### Pulling `Result`s out of `Option`s
+///
+/// The most basic way of handing mixed error types is to just embed them in each other.
+///
+/// ### Defining an error type
+///
+/// Sometimes it simplifies the code to mask all of the different errors with a single type of error.
+/// Rust allows us to define our own error types. In general, a "good" error type:
+///
+/// * Represents different errors with the same type
+/// * Presents nice error messages to the user
+/// * Is easy to compare with other types
+///     - Good: `Err(EmptyVec)`
+///     - Bad: `Err("Use a vector with at least one element".to_owned())`
+/// * Can hold infomation about the error
+///     - Good: `Err(BadChar(c, position))`
+///     - Bad: `Err("+ cannot be used here".to_owned())`
+/// * Composes well with other errors
+///
+
+//Vec::first returns an `Option`, while `parse::<i32>` returns a `Result<i32, ParseIntError>
+fn double_first(vec: &Vec<&str>) -> Option<Result<i32, ParseIntError>> {
+    vec.first().map(|first| first.parse::<i32>().map(|n| 2 * n))
+}
+fn double_first2(vec: &Vec<&str>) -> Result<Option<i32>, ParseIntError> {
+    let opt = vec.first().map(|first| first.parse::<i32>().map(|n| 2 * n));
+    opt.map_or(Ok(None), |r| r.map(Some))
+}
+
+use std::fmt;
+#[derive(Debug, Clone)]
+struct DoubleError;
+
+impl fmt::Display for DoubleError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "invalid first item to double")
+    }
+}
+
+fn double_first3(vec: &Vec<&str>) -> Result<i32, DoubleError> {
+    vec.first()
+        .ok_or(DoubleError)
+        .and_then(|s| s.parse::<i32>().map_err(|_| DoubleError).map(|i| 2 * i))
+}
+
+#[test]
+fn test_multiple_error_types() {
+    let numbers = vec!["42", "93", "18"];
+    let empty = vec![];
+    let strings = vec!["tofu", "93", "18"];
+
+    println!("The first doubled is {:?}", double_first(&numbers));
+    println!("The first doubled is {:?}", double_first(&empty));
+    println!("The first doubled is {:?}", double_first(&strings));
+
+    println!("2 The first doubled is {:?}", double_first2(&numbers));
+    println!("2 The first doubled is {:?}", double_first2(&empty));
+    println!("2 The first doubled is {:?}", double_first2(&strings));
+
+    println!("3 The first doubled is {:?}", double_first3(&numbers));
+    println!("3 The first doubled is {:?}", double_first3(&empty));
+    println!("3 The first doubled is {:?}", double_first3(&strings));
 }
