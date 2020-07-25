@@ -1,0 +1,368 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'rary'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "rary",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rust_learning'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust_learning",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "rust_learning",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rust_learning'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rust_learning",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "rust_learning",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_attributes'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_attributes",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_attributes",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_comments'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_comments",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_comments",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_conversion'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_conversion",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_conversion",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_crates'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_crates",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_crates",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_custom_types'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_custom_types",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_custom_types",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_error_handling'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_error_handling",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_error_handling",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_expressions'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_expressions",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_expressions",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_flow_of_control'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_flow_of_control",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_flow_of_control",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_functions'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_functions",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_functions",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_generics'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_generics",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_generics",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_macros'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_macros",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_macros",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_modules'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_modules",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_modules",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_primitives'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_primitives",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_primitives",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_prints'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_prints",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_prints",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_std_libs'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_std_libs",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_std_libs",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'test_traits'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=test_traits",
+                    "--package=rust_learning"
+                ],
+                "filter": {
+                    "name": "test_traits",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
