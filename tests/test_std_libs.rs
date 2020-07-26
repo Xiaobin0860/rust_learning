@@ -368,3 +368,29 @@ fn test_custom_key_types() {
     assert_eq!(false, try_logon(&accounts, "j.everyman", "Password123"));
     assert_eq!(true, try_logon(&accounts, "j.Everyman", "password123"));
 }
+
+/// ## Threads
+
+/// Rust provides a mechanism for spawning native OS threads via the spawn function, 
+/// the argument of this function is a moving closure.
+use std::thread;
+
+static NTHREADS: i32 = 10;
+
+#[test]
+fn test_threads() {
+    // Make a vector to hold the children which are spawned.
+    let mut children = vec![];
+
+    for i in 0..NTHREADS {
+        // Spin up another thread
+        children.push(thread::spawn(move || {
+            println!("this is thread number {}", i);
+        }));
+    }
+
+    for child in children {
+        // Wait for the thread to finish. Returns a result.
+        let _ = child.join();
+    }
+}
