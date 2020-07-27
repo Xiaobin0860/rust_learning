@@ -371,7 +371,7 @@ fn test_custom_key_types() {
 
 /// ## Threads
 
-/// Rust provides a mechanism for spawning native OS threads via the spawn function, 
+/// Rust provides a mechanism for spawning native OS threads via the spawn function,
 /// the argument of this function is a moving closure.
 use std::thread;
 
@@ -385,7 +385,12 @@ fn test_threads() {
     for i in 0..NTHREADS {
         // Spin up another thread
         children.push(thread::spawn(move || {
-            println!("this is thread number {}", i);
+            println!("begin this is thread number {}", i);
+            if i == 0 {
+                // panic current thread
+                panic!("panic {}", i);
+            }
+            println!("end this is thread number {}", i);
         }));
     }
 
@@ -393,4 +398,6 @@ fn test_threads() {
         // Wait for the thread to finish. Returns a result.
         let _ = child.join();
     }
+
+    println!("ok");
 }
