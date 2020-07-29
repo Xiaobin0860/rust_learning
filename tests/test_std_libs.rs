@@ -537,3 +537,37 @@ fn test_channels() -> Result<(), mpsc::RecvError> {
 
     Ok(())
 }
+
+///
+/// ## Path
+///
+/// the `Path` struct represents file paths in the underlying filesystem. There are two flavors of `Path`:
+/// `posix::Path`, for UNIX-like systems, and `windows::Path`, for Windows. The prelude exports the appropriate
+/// platform-specific `Path` variant.
+///
+/// A `Path` can be created from an `OsStr`, and provides several methods to get information from the
+/// file/directory the path points to.
+///
+/// Note that a `Path` is not internally represented as an UTF-8 string, but instead is stored as a vector of
+/// bypes(`Vec<u8>`). Therefore, converting a `Path` to a `&str` is not free and may fail(an `Option` is returned).
+///
+use std::path::Path;
+
+#[test]
+fn test_path() {
+    let path = Path::new(".");
+    println!("{}", path.display());
+
+    for f in path.read_dir().expect("read_dir failed") {
+        if let Ok(f) = f {
+            println!("{:?}", f.path());
+        }
+    }
+
+    let new_path = path.join("a").join("b");
+
+    match new_path.to_str() {
+        None => panic!("new path is not a valid UTF-8 sequence"),
+        Some(s) => println!("new path is {}", s),
+    }
+}
