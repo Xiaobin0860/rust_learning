@@ -571,3 +571,58 @@ fn test_path() {
         Some(s) => println!("new path is {}", s),
     }
 }
+
+///
+/// ## File I/O
+///
+/// The `File` struct represents a file that has been opened(it wraps a file descriptor), and gives read
+/// and/or write access to the underlying file.
+///
+/// Since many things can go wrong when doing file I/O, all the `File` methods return the `io::Result<T>` type,
+/// which is an alias for `Result<T, io::Error>`.
+///
+/// This makes the failure of all I/O operations explicit. Thanks to this, the programmer can see all the
+/// failure paths, and is encouraged to handle them in a proactive manner.
+///
+/// * `open`
+/// The `open` static method can be used to open a file in read-only mode
+///
+/// * `create`
+/// The `create` static method opens a file in write-only mode. If the file already existed, the old content
+/// is destroyed. Otherwise, a new file is created.
+///
+/// * `read_lines`
+/// The method `lines()` returns an iterator over the lines of a file.
+///
+use std::fs::File;
+use std::io::{self, BufRead, Write};
+static TXT: &str = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+";
+#[test]
+fn test_file() {
+    {
+        let mut f = File::create("./test.txt").unwrap();
+        f.write_all(TXT.as_bytes()).unwrap();
+    }
+
+    if let Ok(lines) = read_lines("./test.txt") {
+        for line in lines {
+            if let Ok(line) = line {
+                println!("{}", line);
+            }
+        }
+    }
+}
+
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
+}
