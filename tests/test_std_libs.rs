@@ -626,3 +626,64 @@ where
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
+
+use std::io::prelude::*;
+/// ## Child processes
+///
+/// The `process::Output` struct respresents the output of a finished child process, and the
+/// `process::Command` struct is process builder.
+///
+/// ### Pipes
+///
+/// The `std::Child` struct represents a running process, and exposes the `stdin`, `stdout` and
+/// `stderr` handles for interaction with the underlying process via pipes.
+///
+/// ### Wait
+///
+/// If you'd like to wait for a `process::Child` to finish, you must call `Child::wait`, which
+/// will return a `process::ExitStus`.
+///
+use std::process::{Command, Stdio};
+
+#[test]
+fn test_process() {
+    let output = Command::new("rustc").arg("--version").output().unwrap();
+    if output.status.success() {
+        let s = String::from_utf8_lossy(&output.stdout);
+        println!("stdout: {}", s);
+    } else {
+        let s = String::from_utf8_lossy(&output.stderr);
+        println!("stdout: {}", s);
+    }
+
+    let process = Command::new("telnet")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    process.stdin.unwrap().write_all("q".as_bytes()).unwrap();
+    let mut s = String::new();
+    process.stdout.unwrap().read_to_string(&mut s).unwrap();
+    println!("{}", s);
+
+    if cfg!(target_os = "windows") {
+        let child = Command::new("ping")
+            .arg("-n")
+            .arg("2")
+            .arg("127.0.0.1")
+            .spawn()
+            .unwrap();
+        let out = child.wait_with_output().unwrap();
+        println!("{}", String::from_utf8_lossy(&out.stdout));
+    } else {
+        let child = Command::new("ping")
+            .arg("-c")
+            .arg("2")
+            .arg("127.0.0.1")
+            .spawn()
+            .unwrap();
+        let out = child.wait_with_output().unwrap();
+        println!("{}", String::from_utf8_lossy(&out.stdout));
+    }
+    println!("reached end of main");
+}
