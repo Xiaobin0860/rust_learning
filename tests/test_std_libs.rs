@@ -762,3 +762,24 @@ fn test_fs() -> io::Result<()> {
 
     Ok(())
 }
+
+///
+/// ## Program arguments
+///
+/// ### Standard Libray
+///
+/// The command line arguments can be processed using `std::env::args`, witch returns an iterator
+/// that yields a `String` for each argument:
+///
+/// ### Crates
+///
+/// Alternatively, there are numerous crates that can provide extra funcionally when creating
+/// command-line applications. `clap`
+use std::env;
+
+#[test]
+fn test_args() {
+    let args: Vec<String> = env::args().collect();
+    println!("My path is {}", args[0]);
+    println!("I got {} arguments: {:?}", args.len() - 1, &args[1..]);
+}
