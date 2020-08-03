@@ -687,3 +687,99 @@ fn test_process() {
     }
     println!("reached end of main");
 }
+
+use fs::OpenOptions;
+///
+/// ## Filesystem Operations
+///
+/// The `std::fs` module contains several functions that deal with the filesystem.
+///
+use std::fs;
+use std::os::unix;
+
+fn cat(path: &Path) -> io::Result<String> {
+    let mut f = File::open(path)?;
+    let mut s = String::new();
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e),
+    }
+}
+
+fn echo(s: &str, path: &Path) -> io::Result<()> {
+    let mut f = File::create(path)?;
+    f.write_all(s.as_bytes())
+}
+
+fn touch(path: &Path) -> io::Result<()> {
+    match OpenOptions::new().create(true).write(true).open(path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
+    }
+}
+
+#[test]
+fn test_fs() -> io::Result<()> {
+    println!("`mkdir t`");
+    match fs::create_dir("t") {
+        Err(e) => println!("! {:?}", e),
+        Ok(_) => println!("ok."),
+    }
+    println!("`echo hello > t/b.txt`");
+    echo("hello", &Path::new("t/b.txt")).unwrap_or_else(|why| {
+        println!("! {:?}", why);
+    });
+    println!("`mkdir -p t/c/d`");
+    fs::create_dir_all("t/c/d").unwrap_or_else(|e| {
+        println!("! {:?}", e);
+    });
+    println!("`touch t/c/e.txt`");
+    touch(&Path::new("t/c/e.txt")).unwrap_or_else(|e| {
+        println!("! {:?}", e);
+    });
+    println!("`ln -s ../b.txt t/c/b.txt`");
+    if cfg!(target_family = "unix") {
+        unix::fs::symlink("../b.txt", "t/c/b.txt").unwrap_or_else(|e| {
+            println!("! {:?}", e);
+        });
+        println!("`cat t/c/b.txt`");
+        let s = cat(&Path::new("t/c/b.txt"))?;
+        println!("> {}", s);
+    }
+    println!("`cat t/c/e.txt`");
+    let s = cat(&Path::new("t/c/e.txt"))?;
+    println!("> {}", s);
+    println!("`ls t`");
+    for path in fs::read_dir("t")? {
+        println!("> {:?}", path.unwrap().path());
+    }
+    println!("`rm t/c/e.txt`");
+    fs::remove_file("t/c/e.txt")?;
+    println!("`rmdir a/c/d`");
+    fs::remove_dir("t/c/d")?;
+
+    fs::remove_dir_all("t")?;
+
+    Ok(())
+}
+
+///
+/// ## Program arguments
+///
+/// ### Standard Libray
+///
+/// The command line arguments can be processed using `std::env::args`, witch returns an iterator
+/// that yields a `String` for each argument:
+///
+/// ### Crates
+///
+/// Alternatively, there are numerous crates that can provide extra funcionally when creating
+/// command-line applications. `clap`
+use std::env;
+
+#[test]
+fn test_args() {
+    let args: Vec<String> = env::args().collect();
+    println!("My path is {}", args[0]);
+    println!("I got {} arguments: {:?}", args.len() - 1, &args[1..]);
+}
