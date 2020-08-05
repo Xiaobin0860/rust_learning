@@ -695,7 +695,6 @@ use fs::OpenOptions;
 /// The `std::fs` module contains several functions that deal with the filesystem.
 ///
 use std::fs;
-use std::os::unix;
 
 fn cat(path: &Path) -> io::Result<String> {
     let mut f = File::open(path)?;
@@ -718,6 +717,30 @@ fn touch(path: &Path) -> io::Result<()> {
     }
 }
 
+#[cfg(unix)]
+fn link_file(src: &str, dst: &str) -> io::Result<()> {
+    std::os::unix::fs::symlink(src, dst).unwrap_or_else(|e| {
+        println!("! {:?}", e);
+    });
+    println!("cat {}", dst);
+    let s = cat(&Path::new(dst))?;
+    println!("> {}", s);
+
+    Ok(())
+}
+
+#[cfg(windows)]
+fn link_file(src: &str, dst: &str) -> io::Result<()> {
+    std::os::windows::fs::symlink_file(src, dst).unwrap_or_else(|e| {
+        println!("! {:?}", e);
+    });
+    println!("cat {}", dst);
+    let s = cat(&Path::new(dst))?;
+    println!("> {}", s);
+
+    Ok(())
+}
+
 #[test]
 fn test_fs() -> io::Result<()> {
     println!("`mkdir t`");
@@ -738,14 +761,7 @@ fn test_fs() -> io::Result<()> {
         println!("! {:?}", e);
     });
     println!("`ln -s ../b.txt t/c/b.txt`");
-    if cfg!(target_family = "unix") {
-        unix::fs::symlink("../b.txt", "t/c/b.txt").unwrap_or_else(|e| {
-            println!("! {:?}", e);
-        });
-        println!("`cat t/c/b.txt`");
-        let s = cat(&Path::new("t/c/b.txt"))?;
-        println!("> {}", s);
-    }
+    let _ = link_file("../b.txt", "t/c/b.txt");
     println!("`cat t/c/e.txt`");
     let s = cat(&Path::new("t/c/e.txt"))?;
     println!("> {}", s);

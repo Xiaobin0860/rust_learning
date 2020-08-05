@@ -3,6 +3,7 @@ name = "rust_learning"
 version = "0.1.0"
 authors = ["Xiaobin Li <l_xb@foxmail.com>"]
 edition = "2018"
+build = "build.rs"
 
 [lib]
 name = "rary"
@@ -12,3 +13,7 @@ path = "src/rary.rs"
 
 [dependencies]
 rand = "0.7"
+libc = "0.2"
+
+[build-dependencies]
+cc = "1.0"

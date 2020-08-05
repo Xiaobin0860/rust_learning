@@ -26,12 +26,6 @@
 /// declared inside an `extern` block annotated with a `#[link]` attribute containing the name
 /// of the foreign library.
 ///
-// // this extern block links to the libc library
-// #[link(name = "c")]
-// extern "C" {
-//     fn abs(input: i32) -> i32;
-//     fn write(fd: i32, data: *const u8, len: usize) -> isize;
-// }
 use std::slice;
 #[test]
 fn test_unsafe() {
@@ -43,12 +37,8 @@ fn test_unsafe() {
     let v = vec![1, 2, 3, 4];
     let pointer = v.as_ptr();
     let length = v.len();
-    // let data = b"hello world\n";
     unsafe {
         let my_slice: &[u32] = slice::from_raw_parts(pointer, length);
         assert_eq!(v.as_slice(), my_slice);
-
-        //     assert_eq!(abs(-5), 5);
-        //     write(1, data.as_ptr(), data.len());
     }
 }
