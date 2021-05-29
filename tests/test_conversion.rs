@@ -68,3 +68,162 @@ fn test_convert() {
     let parsed2 = "10".parse::<i32>().unwrap();
     assert_eq!(15, parsed + parsed2);
 }
+
+#[derive(Debug)]
+struct Person {
+    name: String,
+    age: usize,
+}
+
+// We implement the Default trait to use it as a fallback
+// when the provided string is not convertible into a Person object
+impl Default for Person {
+    fn default() -> Person {
+        Person {
+            name: String::from("John"),
+            age: 30,
+        }
+    }
+}
+
+impl From<&str> for Person {
+    fn from(s: &str) -> Person {
+        let vs: Vec<&str> = s.split(',').collect();
+        if vs.len() == 2 {
+            if let Ok(n) = vs[1].parse::<usize>() {
+                if !vs[0].is_empty() {
+                    return Person {
+                        name: String::from(vs[0]),
+                        age: n,
+                    };
+                }
+            }
+        }
+        Person::default()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_default() {
+        // Test that the default person is 30 year old John
+        let dp = Person::default();
+        assert_eq!(dp.name, "John");
+        assert_eq!(dp.age, 30);
+    }
+    #[test]
+    fn test_bad_convert() {
+        // Test that John is returned when bad string is provided
+        let p = Person::from("");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+    #[test]
+    fn test_good_convert() {
+        // Test that "Mark,20" works
+        let p = Person::from("Mark,20");
+        assert_eq!(p.name, "Mark");
+        assert_eq!(p.age, 20);
+    }
+    #[test]
+    fn test_bad_age() {
+        // Test that "Mark,twenty" will return the default person due to an error in parsing age
+        let p = Person::from("Mark,twenty");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_missing_comma_and_age() {
+        let p: Person = Person::from("Mark");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_missing_age() {
+        let p: Person = Person::from("Mark,");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_missing_name() {
+        let p: Person = Person::from(",1");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_missing_name_and_age() {
+        let p: Person = Person::from(",");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_missing_name_and_invalid_age() {
+        let p: Person = Person::from(",one");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_trailing_comma() {
+        let p: Person = Person::from("Mike,32,");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+
+    #[test]
+    fn test_trailing_comma_and_some_string() {
+        let p: Person = Person::from("Mike,32,man");
+        assert_eq!(p.name, "John");
+        assert_eq!(p.age, 30);
+    }
+}
+
+use std::convert::AsRef;
+
+// Obtain the number of bytes (not characters) in the given argument
+// Add the AsRef trait appropriately as a trait bound
+fn byte_counter<T: AsRef<str>>(arg: T) -> usize {
+    arg.as_ref().as_bytes().len()
+}
+
+// Obtain the number of characters (not bytes) in the given argument
+// Add the AsRef trait appropriately as a trait bound
+fn char_counter<T: AsRef<str>>(arg: T) -> usize {
+    arg.as_ref().chars().count()
+}
+
+#[cfg(test)]
+mod tests_asref {
+    use super::*;
+
+    #[test]
+    fn different_counts() {
+        let s = "Café au lait";
+        assert_ne!(char_counter(s), byte_counter(s));
+    }
+
+    #[test]
+    fn same_counts() {
+        let s = "Cafe au lait";
+        assert_eq!(char_counter(s), byte_counter(s));
+    }
+
+    #[test]
+    fn different_counts_using_string() {
+        let s = String::from("Café au lait");
+        assert_ne!(char_counter(s.clone()), byte_counter(s));
+    }
+
+    #[test]
+    fn same_counts_using_string() {
+        let s = String::from("Cafe au lait");
+        assert_eq!(char_counter(s.clone()), byte_counter(s));
+    }
+}
