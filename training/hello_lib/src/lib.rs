@@ -1,3 +1,6 @@
+pub mod encoder;
+pub mod user;
+
 #[cfg(test)]
 mod tests {
     #[test]
