@@ -1,4 +1,5 @@
 pub mod encoder;
+pub mod strtok;
 pub mod user;
 
 #[cfg(test)]
