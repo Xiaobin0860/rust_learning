@@ -25,4 +25,5 @@ members = [
   # training
   "training/hello_bin",
   "training/hello_lib",
+  "training/prostc",
 ]
