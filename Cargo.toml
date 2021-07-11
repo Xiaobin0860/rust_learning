@@ -13,7 +13,7 @@ path = "src/rary.rs"
 
 [dependencies]
 libc = "0.2"
-rand = "0.7"
+rand = "0.8"
 
 [build-dependencies]
 cc = "1.0"
@@ -26,4 +26,5 @@ members = [
   "training/hello_bin",
   "training/hello_lib",
   "training/prostc",
+  "training/kv",
 ]
