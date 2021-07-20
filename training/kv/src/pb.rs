@@ -6,6 +6,8 @@ mod abi;
 
 pub use abi::*;
 
+use self::request::Command;
+
 impl Response {
     pub fn new(key: String, value: Vec<u8>) -> Self {
         Self {
@@ -27,6 +29,33 @@ impl Response {
         Self {
             code: 500,
             ..Default::default()
+        }
+    }
+}
+
+impl Request {
+    pub fn new_get(key: &str) -> Self {
+        Self {
+            command: Some(Command::Get(RequestGet {
+                key: key.to_owned(),
+            })),
+        }
+    }
+
+    pub fn new_del(key: &str) -> Self {
+        Self {
+            command: Some(Command::Del(RequestDel {
+                key: key.to_owned(),
+            })),
+        }
+    }
+
+    pub fn new_put(key: &str, value: &[u8]) -> Self {
+        Self {
+            command: Some(Command::Put(RequestPut {
+                key: key.to_owned(),
+                value: value.to_vec(),
+            })),
         }
     }
 }

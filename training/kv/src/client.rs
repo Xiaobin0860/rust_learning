@@ -1,12 +1,36 @@
 mod pb;
-use pb::*;
-use prost::Message;
+use std::convert::TryFrom;
 
-fn main() {
-    let get = RequestGet {
-        key: "hello".to_owned(),
-    };
-    let mut buf = Vec::new();
-    get.encode(&mut buf).unwrap();
-    println!("{:?}", buf);
+use anyhow::Result;
+use futures::{SinkExt, StreamExt};
+use pb::*;
+use tokio::net::TcpStream;
+use tokio_util::codec::LengthDelimitedCodec;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let addr = "127.0.0.1:8888";
+    let stream = TcpStream::connect(addr).await?;
+    let mut stream = LengthDelimitedCodec::builder()
+        .length_field_length(2)
+        .new_framed(stream);
+
+    let msg = Request::new_put("hello", b"world");
+    stream.send(msg.into()).await?;
+
+    let msg = Request::new_get("hello");
+    stream.send(msg.into()).await?;
+
+    let msg = Request::new_get("world");
+    stream.send(msg.into()).await?;
+
+    let msg = Request::new_del("hello");
+    stream.send(msg.into()).await?;
+
+    while let Some(Ok(buf)) = stream.next().await {
+        let msg = Response::try_from(buf)?;
+        println!("Got msg: {:?}", msg);
+    }
+
+    Ok(())
 }
