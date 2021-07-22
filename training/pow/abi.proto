@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package abi;
+
+service PowBuilder {
+  rpc Subscribe(ClientInfo) returns (stream BlockHash);
+  rpc Submit(Block) returns (BlockStatus);
+}
+
+message Block {
+  bytes data = 1;
+  // calc
+  bytes hash = 2;
+  // tune nonce to get hash with x 0 prefix
+  uint32 nonce = 3;
+}
+
+message BlockStatus {
+  uint32 code = 1; //
+}
+
+message ClientInfo {
+  string name = 1; //
+}
+
+message BlockHash {
+  // unique id
+  bytes id = 1;
+  // pow hash
+  bytes hash = 2;
+}

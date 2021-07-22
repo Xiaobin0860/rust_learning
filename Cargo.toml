@@ -27,4 +27,5 @@ members = [
   "training/hello_lib",
   "training/prostc",
   "training/kv",
+  "training/pow",
 ]
