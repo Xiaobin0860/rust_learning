@@ -1,36 +1,36 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub data: ::prost::alloc::vec::Vec<u8>,
     /// calc
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub hash: ::prost::alloc::vec::Vec<u8>,
     /// tune nonce to get hash with x 0 prefix
-    #[prost(uint32, tag = "3")]
+    #[prost(uint32, tag="3")]
     pub nonce: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BlockStatus {
     ///
-    #[prost(uint32, tag = "1")]
+    #[prost(uint32, tag="1")]
     pub code: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ClientInfo {
     ///
-    #[prost(string, tag = "1")]
+    #[prost(string, tag="1")]
     pub name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BlockHash {
     /// unique id
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub id: ::prost::alloc::vec::Vec<u8>,
     /// pow hash
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub hash: ::prost::alloc::vec::Vec<u8>,
 }
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod pow_builder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -39,7 +39,7 @@ pub mod pow_builder_client {
         inner: tonic::client::Grpc<T>,
     }
     impl PowBuilderClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -52,8 +52,8 @@ pub mod pow_builder_client {
     impl<T> PowBuilderClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + Sync + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -65,27 +65,31 @@ pub mod pow_builder_client {
             interceptor: F,
         ) -> PowBuilderClient<InterceptedService<T, F>>
         where
-            F: FnMut(tonic::Request<()>) -> Result<tonic::Request<()>, tonic::Status>,
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + Send + Sync,
         {
             PowBuilderClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
@@ -93,47 +97,54 @@ pub mod pow_builder_client {
         pub async fn subscribe(
             &mut self,
             request: impl tonic::IntoRequest<super::ClientInfo>,
-        ) -> Result<tonic::Response<tonic::codec::Streaming<super::BlockHash>>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+        ) -> Result<
+                tonic::Response<tonic::codec::Streaming<super::BlockHash>>,
+                tonic::Status,
+            > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/abi.PowBuilder/Subscribe");
-            self.inner
-                .server_streaming(request.into_request(), path, codec)
-                .await
+            self.inner.server_streaming(request.into_request(), path, codec).await
         }
         pub async fn submit(
             &mut self,
             request: impl tonic::IntoRequest<super::Block>,
         ) -> Result<tonic::Response<super::BlockStatus>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/abi.PowBuilder/Submit");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
 }
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod pow_builder_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with PowBuilderServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with PowBuilderServer.
     #[async_trait]
     pub trait PowBuilder: Send + Sync + 'static {
-        #[doc = "Server streaming response type for the Subscribe method."]
-        type SubscribeStream: futures_core::Stream<Item = Result<super::BlockHash, tonic::Status>>
+        ///Server streaming response type for the Subscribe method.
+        type SubscribeStream: futures_core::Stream<
+                Item = Result<super::BlockHash, tonic::Status>,
+            >
             + Send
-            + Sync
             + 'static;
         async fn subscribe(
             &self,
@@ -153,7 +164,9 @@ pub mod pow_builder_server {
     struct _Inner<T>(Arc<T>);
     impl<T: PowBuilder> PowBuilderServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -161,9 +174,12 @@ pub mod pow_builder_server {
                 send_compression_encodings: Default::default(),
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
-            F: FnMut(tonic::Request<()>) -> Result<tonic::Request<()>, tonic::Status>,
+            F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
@@ -171,13 +187,16 @@ pub mod pow_builder_server {
     impl<T, B> tonic::codegen::Service<http::Request<B>> for PowBuilderServer<T>
     where
         T: PowBuilder,
-        B: Body + Send + Sync + 'static,
+        B: Body + Send + 'static,
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
-        fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+        fn poll_ready(
+            &mut self,
+            _cx: &mut Context<'_>,
+        ) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
@@ -186,11 +205,16 @@ pub mod pow_builder_server {
                 "/abi.PowBuilder/Subscribe" => {
                     #[allow(non_camel_case_types)]
                     struct SubscribeSvc<T: PowBuilder>(pub Arc<T>);
-                    impl<T: PowBuilder> tonic::server::ServerStreamingService<super::ClientInfo> for SubscribeSvc<T> {
+                    impl<
+                        T: PowBuilder,
+                    > tonic::server::ServerStreamingService<super::ClientInfo>
+                    for SubscribeSvc<T> {
                         type Response = super::BlockHash;
                         type ResponseStream = T::SubscribeStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ClientInfo>,
@@ -207,10 +231,11 @@ pub mod pow_builder_server {
                         let inner = inner.0;
                         let method = SubscribeSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
-                            accept_compression_encodings,
-                            send_compression_encodings,
-                        );
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            );
                         let res = grpc.server_streaming(method, req).await;
                         Ok(res)
                     };
@@ -219,10 +244,17 @@ pub mod pow_builder_server {
                 "/abi.PowBuilder/Submit" => {
                     #[allow(non_camel_case_types)]
                     struct SubmitSvc<T: PowBuilder>(pub Arc<T>);
-                    impl<T: PowBuilder> tonic::server::UnaryService<super::Block> for SubmitSvc<T> {
+                    impl<T: PowBuilder> tonic::server::UnaryService<super::Block>
+                    for SubmitSvc<T> {
                         type Response = super::BlockStatus;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
-                        fn call(&mut self, request: tonic::Request<super::Block>) -> Self::Future {
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::Block>,
+                        ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).submit(request).await };
                             Box::pin(fut)
@@ -235,23 +267,28 @@ pub mod pow_builder_server {
                         let inner = inner.0;
                         let method = SubmitSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
-                            accept_compression_encodings,
-                            send_compression_encodings,
-                        );
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            );
                         let res = grpc.unary(method, req).await;
                         Ok(res)
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    Ok(http::Response::builder()
-                        .status(200)
-                        .header("grpc-status", "12")
-                        .header("content-type", "application/grpc")
-                        .body(empty_body())
-                        .unwrap())
-                }),
+                _ => {
+                    Box::pin(async move {
+                        Ok(
+                            http::Response::builder()
+                                .status(200)
+                                .header("grpc-status", "12")
+                                .header("content-type", "application/grpc")
+                                .body(empty_body())
+                                .unwrap(),
+                        )
+                    })
+                }
             }
         }
     }
